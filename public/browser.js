@@ -28,6 +28,8 @@ ourForm.addEventListener('submit', function(e) {
     e.preventDefault()
     axios.post('/add-item', {text: ourField.value}).then(function(response) {
         ourList.insertAdjacentHTML('beforeend', itemTemplate(response.data))
+        ourField.value = ''
+        ourField.focus()
     }).catch(function() {
         console.log('Error: try adding later')
     })
