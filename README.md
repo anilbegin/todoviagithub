@@ -1,5 +1,6 @@
 # todoviagithub
 
+(Simple Node App)
 \*\*\* Currently Public repo as on: Jan 04,2023
 
 first time deploying todoapp via heroku plus github
