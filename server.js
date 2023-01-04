@@ -1,43 +1,42 @@
-let express = require('express')
-let mongodb = require('mongodb')
-let sanitizeHTML = require('sanitize-html')
+// upload App to the Internet through Render
 
+let express = require("express")
+let mongodb = require("mongodb")
+let sanitizeHTML = require("sanitize-html")
 
 let ourApp = express()
 let db
 let port = process.env.PORT
-if(port == null || port == "") {
-    port = 3000
+if (port == null || port == "") {
+  port = 3000
 }
 
-ourApp.use(express.urlencoded({extended: false}))
-ourApp.use(express.static('public'))
+ourApp.use(express.urlencoded({ extended: false }))
+ourApp.use(express.static("public"))
 ourApp.use(express.json())
 ourApp.use(passwordProtected)
 
-connectionString = 'mongodb+srv://todoAppUser:9122002!@cluster0.qt0ww.mongodb.net/pracApp?retryWrites=true&w=majority'
-mongodb.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
-    db = client.db()
-    ourApp.listen(port)
+connectionString = "mongodb+srv://todoAppUser:9122002!@cluster0.qt0ww.mongodb.net/pracApp?retryWrites=true&w=majority"
+mongodb.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true }, function (err, client) {
+  db = client.db()
+  ourApp.listen(port)
 })
 
 function passwordProtected(req, res, next) {
-    res.set('WWW-Authenticate', 'Basic realm="Simple To do App"')
-    //console.log(req.headers.authorization)
-    if(req.headers.authorization == 'Basic YWJjZDoxMjM0')
-    {
-        next()
-    }
-    else
-    {
-        res.status(401).send('Authentication required')
-    }
-    
+  res.set("WWW-Authenticate", 'Basic realm="Simple To do App"')
+  //console.log(req.headers.authorization)
+  if (req.headers.authorization == "Basic YWJjZDoxMjM0") {
+    next()
+  } else {
+    res.status(401).send("Authentication required")
+  }
 }
 
-ourApp.get('/', function(req, res) {
-    db.collection('items').find().toArray(function(err, items) {
-        res.send(`<!DOCTYPE html>
+ourApp.get("/", function (req, res) {
+  db.collection("items")
+    .find()
+    .toArray(function (err, items) {
+      res.send(`<!DOCTYPE html>
     <html>
         <head>
             <meta charset="UTF-8">
@@ -69,7 +68,6 @@ ourApp.get('/', function(req, res) {
         </body>
     </html>`)
     })
-    
 })
 
 // basic submit method
@@ -82,24 +80,22 @@ ourApp.post('/create-item', function(req, res) {
 */
 
 //Axios submit method
-ourApp.post('/add-item', function(req, res) {
-    let safeText = sanitizeHTML(req.body.text, { allowedTags: [], allowedAttributes: {}})
-    db.collection('items').insertOne({text: safeText}, function(err, info) {
-        res.json(info.ops[0])
-    })
+ourApp.post("/add-item", function (req, res) {
+  let safeText = sanitizeHTML(req.body.text, { allowedTags: [], allowedAttributes: {} })
+  db.collection("items").insertOne({ text: safeText }, function (err, info) {
+    res.json(info.ops[0])
+  })
 })
 
-ourApp.post('/edit-item', function( req, res) {
-    let safeText = sanitizeHTML(req.body.text, { allowedTags: [], allowedAttributes: {}})
-    db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: safeText}}, function() {
-        res.send('Success')
-        
-    })
+ourApp.post("/edit-item", function (req, res) {
+  let safeText = sanitizeHTML(req.body.text, { allowedTags: [], allowedAttributes: {} })
+  db.collection("items").findOneAndUpdate({ _id: new mongodb.ObjectId(req.body.id) }, { $set: { text: safeText } }, function () {
+    res.send("Success")
+  })
 })
 
-ourApp.post('/delete-item', function(req, res) {
-    db.collection('items').deleteOne({_id: new mongodb.ObjectId(req.body.id)}, function() {
-        res.send('Success')
-    })
+ourApp.post("/delete-item", function (req, res) {
+  db.collection("items").deleteOne({ _id: new mongodb.ObjectId(req.body.id) }, function () {
+    res.send("Success")
+  })
 })
-
