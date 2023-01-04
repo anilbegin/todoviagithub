@@ -2,6 +2,8 @@
 // upload App to the Internet through Render
 
 let express = require("express")
+const dotenv = require("dotenv")
+dotenv.config()
 let mongodb = require("mongodb")
 let sanitizeHTML = require("sanitize-html")
 
@@ -17,7 +19,7 @@ ourApp.use(express.static("public"))
 ourApp.use(express.json())
 ourApp.use(passwordProtected)
 
-connectionString = "mongodb+srv://todoAppUser:9122002!@cluster0.qt0ww.mongodb.net/pracApp?retryWrites=true&w=majority"
+connectionString = process.env.CONNECTIONSTRING
 mongodb.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true }, function (err, client) {
   db = client.db()
   ourApp.listen(port)
